@@ -1,26 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
+/* ================================================================
+   BOKYSH — PREMIUM BOOKING PLATFORM THEME
+   Inspired by: Ticketmaster · Fandango · StubHub
+
+   Palette:
+     Space Black:   #080C15
+     Deep Navy:     #0D1526
+     Navy Card:     #111D35
+     Blue Primary:  #026CDF  (Ticketmaster Azure)
+     Blue Vivid:    #1D8EFF
+     Cyan Accent:   #06B6D4
+     Gold Accent:   #F59E0B
+     White:         #FFFFFF
+   ================================================================ */
+
+@theme {
+  --color-background:           hsl(var(--background));
+  --color-foreground:           hsl(var(--foreground));
+  --color-card:                 hsl(var(--card));
+  --color-card-foreground:      hsl(var(--card-foreground));
+  --color-primary:              hsl(var(--primary));
+  --color-primary-foreground:   hsl(var(--primary-foreground));
+  --color-secondary:            hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted:                hsl(var(--muted));
+  --color-muted-foreground:     hsl(var(--muted-foreground));
+  --color-border:               hsl(var(--border));
+  --color-input:                hsl(var(--input));
+  --color-ring:                 hsl(var(--ring));
+  --color-accent:               hsl(var(--accent));
+  --color-accent-foreground:    hsl(var(--accent-foreground));
+  --color-popover:              hsl(var(--popover));
+  --color-popover-foreground:   hsl(var(--popover-foreground));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/* ── Dark Base (Default) ──────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Space black + deep navy */
+  --background:             220 40% 6%;      /* #080C15 */
+  --foreground:             210 40% 96%;
+
+  --card:                   222 42% 12%;     /* #111D35 */
+  --card-foreground:        210 40% 94%;
+
+  --popover:                222 42% 10%;
+  --popover-foreground:     210 40% 94%;
+
+  /* Primary — Electric Blue (Ticketmaster Azure) */
+  --primary:                212 98% 44%;     /* #026CDF */
+  --primary-foreground:     0 0% 100%;
+
+  --secondary:              220 38% 16%;
+  --secondary-foreground:   210 40% 90%;
+
+  --muted:                  220 35% 14%;
+  --muted-foreground:       215 20% 52%;
+
+  --accent:                 191 96% 43%;     /* Cyan #06B6D4 */
+  --accent-foreground:      0 0% 100%;
+
+  --destructive:            0 72% 51%;
+  --border:                 220 35% 18%;
+  --input:                  220 35% 18%;
+  --ring:                   212 98% 44%;
+  --radius:                 0.65rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ================================================================
+   BASE
+   ================================================================ */
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+    box-sizing: border-box;
   }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02","cv03","cv04","cv11";
+  }
+
+  ::selection { background: rgba(2, 108, 223, 0.28); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar       { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1a2743; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: #026CDF; }
+
+  .scrollbar-none { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ================================================================
+   UTILITY CLASSES
+   ================================================================ */
+
+/* Brand gradient  — Blue to Cyan */
+.gradient-brand {
+  background: linear-gradient(135deg, #024bb0 0%, #026CDF 55%, #1D8EFF 100%);
+}
+
+/* Vivid blue gradient for CTAs */
+.gradient-cta {
+  background: linear-gradient(135deg, #026CDF, #06B6D4);
+}
+
+/* Text gradient */
+.gradient-text {
+  background: linear-gradient(135deg, #1D8EFF 0%, #06B6D4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gold text */
+.gradient-gold {
+  background: linear-gradient(135deg, #F59E0B, #FCD34D);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass panels */
+.glass {
+  background: rgba(13, 21, 38, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.glass-card {
+  background: rgba(17, 29, 53, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Glows */
+.glow-blue {
+  box-shadow: 0 0 24px rgba(2, 108, 223, 0.4), 0 0 48px rgba(2, 108, 223, 0.12);
+}
+.glow-blue-sm {
+  box-shadow: 0 0 14px rgba(2, 108, 223, 0.35);
+}
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+}
+
+/* Card surface */
+.surface {
+  background: #0D1526;
+  border: 1px solid rgba(255,255,255,0.055);
+}
+.surface-raised {
+  background: #111D35;
+  border: 1px solid rgba(255,255,255,0.07);
 }
