@@ -1,13 +1,14 @@
 import Link from "next/link";
 import {
   LayoutDashboard, Users, CalendarDays,
-  Ticket, Tag, Settings, ShieldCheck,
+  Ticket, Tag, Settings, ShieldCheck, MapPin
 } from "lucide-react";
 
 const navItems = [
   { href:"/admin",            icon:LayoutDashboard, label:"Overview"         },
   { href:"/admin/vendors",    icon:ShieldCheck,     label:"Vendors"          },
   { href:"/admin/events",     icon:CalendarDays,    label:"Platform Events"  },
+  { href:"/admin/venues",     icon:MapPin,          label:"Venues"           },
   { href:"/admin/bookings",   icon:Ticket,          label:"Global Bookings"  },
   { href:"/admin/users",      icon:Users,           label:"Users"            },
   { href:"/admin/categories", icon:Tag,             label:"Categories"       },

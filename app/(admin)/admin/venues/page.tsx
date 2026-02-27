@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Search, MapPin, Plus, Maximize2, X } from "lucide-react";
 
 const mockVenues = [
@@ -25,10 +26,13 @@ export default function AdminVenuesPage() {
           <h2 className="text-3xl font-black tracking-tight text-white drop-shadow-sm">System Venues</h2>
           <p className="text-white/40 mt-1">Manage global theaters, stadiums, and their interactive seating structures.</p>
         </div>
-        <button className="bg-[#1D8EFF] hover:bg-[#026CDF] text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-[0_4px_20px_rgba(29,142,255,0.4)] hover:shadow-[0_4px_25px_rgba(2,108,223,0.6)] hover:-translate-y-0.5">
+        <Link 
+          href="/admin/venues/new"
+          className="bg-[#1D8EFF] hover:bg-[#026CDF] text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-[0_4px_20px_rgba(29,142,255,0.4)] hover:shadow-[0_4px_25px_rgba(2,108,223,0.6)] hover:-translate-y-0.5"
+        >
           <Plus className="w-5 h-5" />
           Add New Venue
-        </button>
+        </Link>
       </div>
 
       <div className="relative">
