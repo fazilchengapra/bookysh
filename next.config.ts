@@ -13,6 +13,19 @@ const nextConfig: NextConfig = {
         hostname: "img.youtube.com",
         pathname: "/vi/**",
       },
+      // Ticketmaster event images
+      {
+        protocol: "https",
+        hostname: "s1.ticketm.net",
+      },
+      {
+        protocol: "https",
+        hostname: "**.ticketmaster.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.content.ticketmaster.com",
+      },
     ],
   },
 };

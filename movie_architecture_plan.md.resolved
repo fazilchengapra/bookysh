@@ -1,0 +1,129 @@
+# Movie Data Architecture — Bokysh
+
+## What We're Deciding
+
+Should Bokysh fetch movie data **directly from TMDB** (current approach), or route it through a **custom backend API**?
+
+This is an event booking platform — users browse movies, view details, and **book tickets**. The architecture needs to support both reading movie metadata and writing booking data.
+
+---
+
+## Option A — Direct TMDB (Current Approach)
+
+Next.js Server Components call TMDB directly. No backend involved for movie data.
+
+```
+Browser → Next.js Server → TMDB API
+```
+
+### ✅ Pros
+- Zero extra infrastructure — no backend to build or host
+- Next.js ISR (`revalidate`) gives free caching at the edge
+- TMDB is the canonical source of truth for movie metadata
+- Fast to build, easy to maintain
+
+### ❌ Cons
+- **API key exposed risk** — it's in [lib/tmdb.ts](file:///c:/Users/muham/OneDrive/Desktop/Works/bokysh/lib/tmdb.ts) in plain text (currently in source)
+- Cannot attach **platform-specific data** to a movie (e.g. which cinemas are showing it, showtimes, seat availability, pricing)
+- Cannot store **bookings** against a movie without a backend anyway
+- No control over rate limits — TMDB limits are shared across all users
+- Cannot add custom filtering logic server-side (e.g. "show only movies available in Hyderabad")
+
+---
+
+## Option B — Full Backend Proxy (Your Own API for Everything)
+
+Your backend fetches from TMDB, transforms data, stores what it needs, and exposes its own API.
+
+```
+Browser → Next.js Server → Your Backend API → TMDB API
+                                            → Your Database
+```
+
+### ✅ Pros
+- API key never leaves your server
+- Full control — can enrich movie data with showtimes, pricing, theatre listings
+- Can persist platform-specific data (bookings, seat maps, schedules)
+- One consistent API for all data (movies + tickets + users)
+
+### ❌ Cons
+- Significantly more infrastructure to build and maintain
+- Adds latency (extra network hop)
+- You're rebuilding a caching layer TMDB already provides
+- Overkill if you just need movie metadata
+
+---
+
+## ✅ Recommended — Hybrid Approach
+
+> **Keep TMDB on the Next.js server side for movie metadata. Use your own backend only for platform-specific data.**
+
+```
+                    ┌─────────────────────────────────────┐
+                    │         Next.js (App Server)         │
+                    │                                     │
+  Browser  ──────►  │  Server Components → TMDB API       │  ← movie metadata
+                    │                                     │
+                    │  API Routes → Your Backend/DB       │  ← bookings, showtimes
+                    └─────────────────────────────────────┘
+```
+
+### What TMDB handles (keep as-is):
+| Data | Source |
+|---|---|
+| Movie title, poster, backdrop | TMDB |
+| Overview, cast, crew, trailer | TMDB |
+| Now Playing / Upcoming lists | TMDB |
+| Genre, runtime, rating | TMDB |
+
+### What your Backend must own:
+| Data | Why backend? |
+|---|---|
+| **Showtimes** | Per city/cinema, changes daily |
+| **Seat availability** | Real-time, per screening |
+| **Ticket bookings** | Write operations, user-owned data |
+| **Cinema listings** | Which theatres show which movie |
+| **Pricing** | Varies by seat, time, location |
+| **Featured/promoted movies** | Admin-controlled, not TMDB's job |
+
+---
+
+## Immediate Action Items
+
+> [!IMPORTANT]
+> The TMDB API key is hardcoded in [lib/tmdb.ts](file:///c:/Users/muham/OneDrive/Desktop/Works/bokysh/lib/tmdb.ts) and [movies/page.tsx](file:///c:/Users/muham/OneDrive/Desktop/Works/bokysh/app/%28customer%29/movies/page.tsx). Move it to an environment variable **now**, before any backend work.
+
+### Step 1 — Secure the API key (do this first)
+Move `d86edccefa9682ac2a92a664006b2684` to `.env.local`:
+```env
+TMDB_API_KEY=d86edccefa9682ac2a92a664006b2684
+```
+Then use `process.env.TMDB_API_KEY` in [lib/tmdb.ts](file:///c:/Users/muham/OneDrive/Desktop/Works/bokysh/lib/tmdb.ts).
+
+### Step 2 — Backend schema for platform data
+Your backend needs at minimum:
+- [Movie](file:///c:/Users/muham/OneDrive/Desktop/Works/bokysh/lib/tmdb.ts#89-103) — stores `tmdb_id` as foreign key, adds platform metadata
+- `Cinema` — venues with city
+- `Screening` — movie × cinema × datetime × available seats
+- `Booking` — user × screening × seats × price
+
+### Step 3 — Decide what the backend is built with
+Options: **Next.js API Routes** (simplest, already in your project) or a separate **Node/Express/NestJS** service.
+
+> [!TIP]
+> For a solo or small-team project, **Next.js API Routes + Prisma + PostgreSQL** is the fastest path. You already have the Next.js app — just add `/app/api/` routes and a database.
+
+---
+
+## Verdict
+
+| | Direct TMDB | Full Backend | Hybrid ✅ |
+|---|---|---|---|
+| Speed to build | Fast | Slow | Medium |
+| Movie metadata | ✅ Perfect | Redundant | ✅ TMDB handles it |
+| Booking data | ❌ Impossible | ✅ | ✅ Backend handles it |
+| API key safety | ❌ Exposed | ✅ | ✅ Server-only |
+| Showtimes/cinemas | ❌ | ✅ | ✅ |
+| Maintenance overhead | Low | High | Medium |
+
+**Short answer:** Keep fetching movie metadata from TMDB (it's free, accurate, and fast). Build your own backend only for the data TMDB doesn't have — showtimes, seat maps, and bookings.

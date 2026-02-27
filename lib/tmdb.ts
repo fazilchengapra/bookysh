@@ -37,11 +37,11 @@ async function tmdb<T>(endpoint: string, params: Record<string, string> = {}): P
 /* ── Endpoints ──────────────────────────────────────────── */
 // Only currently-in-theatre movies (TMDB handles the date window)
 export const getNowPlaying = (page = 1) =>
-  tmdb<TMDBListResponse>("/movie/now_playing", { page: String(page) });
+  tmdb<TMDBListResponse>("/movie/now_playing", { page: String(page), region: "IN" });
 
 // Only movies with a future or very-near release date
 export const getUpcoming = (page = 1) =>
-  tmdb<TMDBListResponse>("/movie/upcoming", { page: String(page) });
+  tmdb<TMDBListResponse>("/movie/upcoming", { page: String(page), region: "IN" });
 
 export const searchMovies = (q: string, page = 1) =>
   tmdb<TMDBListResponse>("/search/movie", { query: q, page: String(page) });
